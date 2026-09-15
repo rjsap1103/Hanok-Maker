@@ -1,0 +1,13 @@
+:root {
+  --color-celadon: #5C8F87;
+  --color-plum: #4B2438;
+  --color-copper: #C56A3D;
+  --color-ivory: #EFE7D6;
+  --color-ink: #15181A;
+  --color-surface: #202526;
+  --color-border: rgba(239, 231, 214, 0.18);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.25);
+}

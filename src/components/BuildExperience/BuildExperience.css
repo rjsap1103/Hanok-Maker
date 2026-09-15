@@ -1,0 +1,20 @@
+/* Responsive rules for BuildExperience */
+
+@media (max-width: 768px) {
+  /* Hide desktop floating inventory and info on mobile screens */
+  .desktop-inventory,
+  .desktop-info {
+    display: none !important;
+  }
+
+  /* Show mobile bottom sheet trigger */
+  .mobile-bottomsheet-trigger {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-bottomsheet-trigger {
+    display: none !important;
+  }
+}
