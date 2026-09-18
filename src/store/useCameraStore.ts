@@ -8,7 +8,7 @@ import { create } from 'zustand';
  * - isometric: 3차원 투각 원근 뷰
  * - interior: 한옥 대청/방 내부 시점
  */
-export type CameraPreset = 'default' | 'front' | 'top' | 'isometric' | 'interior';
+export type CameraPreset = 'default' | 'front' | 'side' | 'top' | 'isometric' | 'interior';
 
 export interface CameraTransform {
   position: [number, number, number];
@@ -36,6 +36,11 @@ export const CAMERA_OFFSET_CONFIGS: Record<CameraPreset, CameraOffsetConfig> = {
   // 정면 뷰: 수평선상에서 한옥의 정면 외관을 단정하게 정렬하여 관찰
   front: {
     offset: [0, 0, 18],
+    fov: 40,
+  },
+  // 측면 뷰: 건물 측면(박공면/합각면)에서 도리와 서까래 걸침을 단면처럼 관찰
+  side: {
+    offset: [18, 0, 0],
     fov: 40,
   },
   // 평면(Top) 뷰: 지붕 바로 위 수직 상공(Y축)에서 직하향으로 내려다보아 완벽한 정중앙 평면도 제공
@@ -68,6 +73,11 @@ export const CAMERA_PRESET_CONFIGS: Record<CameraPreset, CameraTransform> = {
     target: [0, 1.8, 0],
     fov: 40,
   },
+  side: {
+    position: [18, 1.8, 0],
+    target: [0, 1.8, 0],
+    fov: 40,
+  },
   top: {
     position: [0, 24, 0.001],
     target: [0, 1.8, 0],
@@ -88,21 +98,31 @@ export const CAMERA_PRESET_CONFIGS: Record<CameraPreset, CameraTransform> = {
 export interface CameraState {
   currentPreset: CameraPreset;
   autoRotate: boolean;
+  isCinematicMode: boolean;
+  cinematicStageName: string;
 
   // Actions
   setPreset: (preset: CameraPreset) => void;
   resetCamera: () => void;
   setAutoRotate: (autoRotate: boolean) => void;
   toggleAutoRotate: () => void;
+  startCinematicMode: () => void;
+  stopCinematicMode: () => void;
+  setCinematicStageName: (name: string) => void;
 }
 
 export const useCameraStore = create<CameraState>((set) => ({
   currentPreset: 'default',
   autoRotate: false,
+  isCinematicMode: false,
+  cinematicStageName: '',
 
   setPreset: (currentPreset) => set({ currentPreset }),
   resetCamera: () => set({ currentPreset: 'default' }),
   setAutoRotate: (autoRotate) => set({ autoRotate }),
   toggleAutoRotate: () => set((state) => ({ autoRotate: !state.autoRotate })),
+  startCinematicMode: () => set({ isCinematicMode: true, cinematicStageName: 'Daylight 연출' }),
+  stopCinematicMode: () => set({ isCinematicMode: false, cinematicStageName: '' }),
+  setCinematicStageName: (cinematicStageName) => set({ cinematicStageName }),
 }));
 

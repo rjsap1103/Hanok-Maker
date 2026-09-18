@@ -178,3 +178,47 @@ export const DEMO_6_PILLAR_HOUSE_PARTS: PlacedPart[] = [
   // East end wall: Earth wall
   { id: 'w_e', partId: 'wall_earth', name: '외엮기 흙벽 E', category: 'wall', position: [4, 1.9, 0], rotation: [0, Math.PI / 2, 0], scale: [3.78, 2.8, 0.16] },
 ];
+
+// 5. L-Shaped Hanok Preset ('ㄱ'자 집: Main wing 2 bays [-4..4, Z: -2..2], Side wing 1 bay [-4..0, Z: 2..6])
+export const DEMO_L_SHAPE_HOUSE_PARTS: PlacedPart[] = [
+  // 주춧돌 8개
+  { id: 'f_l0', partId: 'foundation_stone', name: '주춧돌 (-4, -2)', category: 'foundation', position: [-4, 0.25, -2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l1', partId: 'foundation_stone', name: '주춧돌 (0, -2)', category: 'foundation', position: [0, 0.25, -2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l2', partId: 'foundation_stone', name: '주춧돌 (4, -2)', category: 'foundation', position: [4, 0.25, -2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l3', partId: 'foundation_stone', name: '주춧돌 (4, 2)', category: 'foundation', position: [4, 0.25, 2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l4', partId: 'foundation_stone', name: '주춧돌 (0, 2)', category: 'foundation', position: [0, 0.25, 2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l5', partId: 'foundation_stone', name: '주춧돌 (-4, 2)', category: 'foundation', position: [-4, 0.25, 2], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l6', partId: 'foundation_stone', name: '주춧돌 (-4, 6)', category: 'foundation', position: [-4, 0.25, 6], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+  { id: 'f_l7', partId: 'foundation_stone', name: '주춧돌 (0, 6)', category: 'foundation', position: [0, 0.25, 6], rotation: [0, 0, 0], scale: [0.9, 0.5, 0.9] },
+
+  // 기둥 8개
+  { id: 'p_l0', partId: 'pillar_round', name: '기둥 (-4, -2)', category: 'pillar', position: [-4, 1.9, -2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l1', partId: 'pillar_round', name: '기둥 (0, -2)', category: 'pillar', position: [0, 1.9, -2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l2', partId: 'pillar_round', name: '기둥 (4, -2)', category: 'pillar', position: [4, 1.9, -2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l3', partId: 'pillar_round', name: '기둥 (4, 2)', category: 'pillar', position: [4, 1.9, 2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l4', partId: 'pillar_round', name: '기둥 (0, 2)', category: 'pillar', position: [0, 1.9, 2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l5', partId: 'pillar_round', name: '기둥 (-4, 2)', category: 'pillar', position: [-4, 1.9, 2], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l6', partId: 'pillar_round', name: '기둥 (-4, 6)', category: 'pillar', position: [-4, 1.9, 6], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+  { id: 'p_l7', partId: 'pillar_round', name: '기둥 (0, 6)', category: 'pillar', position: [0, 1.9, 6], rotation: [0, 0, 0], scale: [0.32, 2.8, 0.32] },
+
+  // 대들보 (본채 + 날개채 사개맞춤 연결)
+  { id: 'b_ln1', partId: 'beam_daedeulbo', name: '대들보 북서', category: 'beam', position: [-2, 3.24, -2], rotation: [0, 0, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_ln2', partId: 'beam_daedeulbo', name: '대들보 북동', category: 'beam', position: [2, 3.24, -2], rotation: [0, 0, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_le', partId: 'beam_daedeulbo', name: '대들보 동측', category: 'beam', position: [4, 3.24, 0], rotation: [0, Math.PI / 2, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_ls_main', partId: 'beam_daedeulbo', name: '대들보 본채남측', category: 'beam', position: [2, 3.24, 2], rotation: [0, 0, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_lw_mid', partId: 'beam_daedeulbo', name: '대들보 연결중간', category: 'beam', position: [-2, 3.24, 2], rotation: [0, 0, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_lw1', partId: 'beam_daedeulbo', name: '대들보 본채서측', category: 'beam', position: [-4, 3.24, 0], rotation: [0, Math.PI / 2, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_lw2', partId: 'beam_daedeulbo', name: '대들보 날개서측', category: 'beam', position: [-4, 3.24, 4], rotation: [0, Math.PI / 2, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_lwing_e', partId: 'beam_daedeulbo', name: '대들보 날개동측', category: 'beam', position: [0, 3.24, 4], rotation: [0, Math.PI / 2, 0], scale: [4.0, 0.32, 0.28] },
+  { id: 'b_lwing_s', partId: 'beam_daedeulbo', name: '대들보 날개남측', category: 'beam', position: [-2, 3.24, 6], rotation: [0, 0, 0], scale: [4.0, 0.32, 0.28] },
+
+  // 벽체 및 창호
+  { id: 'w_ln1', partId: 'wall_earth', name: '흙벽 N1', category: 'wall', position: [-2, 1.9, -2], rotation: [0, 0, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_ln2', partId: 'wall_earth', name: '흙벽 N2', category: 'wall', position: [2, 1.9, -2], rotation: [0, 0, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_le', partId: 'wall_wood', name: '판벽 E', category: 'wall', position: [4, 1.9, 0], rotation: [0, Math.PI / 2, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_ls_main', partId: 'window_lattice', name: '격자창 S', category: 'window', position: [2, 1.9, 2], rotation: [0, 0, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_lwing_e', partId: 'door_sliding', name: '미닫이문 WingE', category: 'door', position: [0, 1.9, 4], rotation: [0, Math.PI / 2, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_lwing_s', partId: 'wall_wood', name: '판벽 WingS', category: 'wall', position: [-2, 1.9, 6], rotation: [0, 0, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_lw2', partId: 'wall_earth', name: '흙벽 WingW', category: 'wall', position: [-4, 1.9, 4], rotation: [0, Math.PI / 2, 0], scale: [3.78, 2.8, 0.16] },
+  { id: 'w_lw1', partId: 'wall_earth', name: '흙벽 MainW', category: 'wall', position: [-4, 1.9, 0], rotation: [0, Math.PI / 2, 0], scale: [3.78, 2.8, 0.16] },
+];

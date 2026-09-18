@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useBuildStore } from '../../store';
+import { useBuildStore, useCameraStore } from '../../store';
+import { saveDesign } from '../../api/designs';
 
 interface CompletedViewProps {
   onOpenGallery?: () => void;
@@ -8,7 +9,7 @@ interface CompletedViewProps {
 
 export const CompletedView: React.FC<CompletedViewProps> = ({ onOpenGallery }) => {
   const setIsComplete = useBuildStore((state) => state.setIsComplete);
-  const placedParts = useBuildStore((state) => state.placedParts);
+  const startCinematicMode = useCameraStore((state) => state.startCinematicMode);
 
   const handleViewHanok = () => {
     console.log('[ACTION] VIEW HANOK clicked - inspection mode');
@@ -17,11 +18,33 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ onOpenGallery }) =
 
   const handleCinematicMode = () => {
     console.log('[ACTION] CINEMATIC MODE clicked - cinematic camera animation initiated');
+    // CompletedView 모달을 닫고, 카메라 시네마틱 모드 및 UI 최소화 진입
+    setIsComplete(false);
+    startCinematicMode();
   };
 
-  const handleSaveDesign = () => {
-    console.log('[ACTION] SAVE DESIGN clicked - saved parts payload:', placedParts);
-    alert('현재 한옥 결구 설계가 저장되었습니다. (콘솔 로그 확인)');
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleSaveDesign = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      const title = prompt('저장할 한옥 작품의 이름을 입력해주세요:', `나의 전통 한옥 #${Math.floor(Math.random() * 1000)}`);
+      if (!title) {
+        setIsSaving(false);
+        return;
+      }
+      const desc = prompt('작품에 대한 간단한 설명을 입력해주세요 (선택):', '사개맞춤 목구조와 우물마루, 세살창이 조화된 전통 한옥');
+      
+      const result = await saveDesign(title, desc || undefined);
+      console.log('[API SAVE SUCCESS]:', result);
+      alert(`🎉 한옥 설계가 DB에 안전하게 저장되었습니다!\n작품 ID: ${result.id}`);
+    } catch (err: any) {
+      console.error('[API SAVE ERROR]:', err);
+      alert(`작품 저장 실패: ${err.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleAIGallery = () => {

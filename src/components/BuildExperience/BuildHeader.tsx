@@ -295,6 +295,23 @@ export const BuildHeader: React.FC<BuildHeaderProps> = ({
               [DEV] STEP 4 지붕
             </button>
             <button
+              id="dev-btn-detail-modal"
+              onClick={() => (window as any).__hanokDev?.openDetailModal('pillar_round')}
+              style={{
+                padding: '4px 8px',
+                fontSize: '0.72rem',
+                backgroundColor: 'rgba(224,122,95,0.25)',
+                color: 'var(--color-copper)',
+                borderRadius: '4px',
+                border: '1px solid rgba(224,122,95,0.5)',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+              title="부품 상세 모달 열기 (Long Press 테스트)"
+            >
+              [DEV] 상세 모달
+            </button>
+            <button
               id="dev-btn-6pillar-house"
               onClick={() => (window as any).__hanokDev?.load6PillarRoof()}
               style={{
@@ -310,6 +327,40 @@ export const BuildHeader: React.FC<BuildHeaderProps> = ({
               title="6기둥 2베이 완성 구조"
             >
               [DEV] 6기둥 집
+            </button>
+            <button
+              id="dev-btn-manual-few"
+              onClick={() => (window as any).__hanokDev?.loadManualFewPurlinsRafters()}
+              style={{
+                padding: '4px 8px',
+                fontSize: '0.72rem',
+                backgroundColor: 'rgba(234, 179, 8, 0.25)',
+                color: '#facc15',
+                borderRadius: '4px',
+                border: '1px solid rgba(234, 179, 8, 0.5)',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+              title="수동으로 도리 3개/서까래 3개 클릭 배치 상태"
+            >
+              [DEV] 수동 배치 상태
+            </button>
+            <button
+              id="dev-btn-csg-test"
+              onClick={() => (window as any).__openCsgModal?.()}
+              style={{
+                padding: '4px 8px',
+                fontSize: '0.72rem',
+                backgroundColor: 'rgba(168, 85, 247, 0.25)',
+                color: '#c084fc',
+                borderRadius: '4px',
+                border: '1px solid rgba(168, 85, 247, 0.5)',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+              title="three-csg-ts 부재 절단 불리언 연산 테스트 모달 열기"
+            >
+              [DEV] CSG 테스트
             </button>
           </div>
         )}

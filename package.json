@@ -5,20 +5,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node --loader ts-node/esm server/index.ts",
+    "start:server": "node server/server.js",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "framer-motion": "^13.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "three": "^0.186.0",
+    "three-csg-ts": "^3.2.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

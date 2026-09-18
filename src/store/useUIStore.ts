@@ -17,7 +17,7 @@ export interface UIState {
 }
 
 export const useUIStore = create<UIState>((set) => ({
-  isStarted: true,
+  isStarted: false,
   isInventoryOpen: true,
   isBottomSheetOpen: false,
   activeModal: null,

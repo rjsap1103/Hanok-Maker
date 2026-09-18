@@ -417,87 +417,118 @@ export const Step3WallManager: React.FC = () => {
             {/* ============================================================== */}
             {/* 3. LATTICE WINDOW (세살 격자창) */}
             {/* ============================================================== */}
-            {isLatticeWindow && (
-              <group>
-                {/* Surrounding Wall Sub-segments creating a real open hollow center */}
-                {/* Bottom Wall sill */}
-                <mesh position={[0, -h * 0.33, 0]} castShadow receiveShadow>
-                  <boxGeometry args={[w, h * 0.34, d]} />
-                  <meshStandardMaterial color={earthColor} roughness={0.9} />
-                </mesh>
-                {/* Top Wall header */}
-                <mesh position={[0, h * 0.42, 0]} castShadow receiveShadow>
-                  <boxGeometry args={[w, h * 0.16, d]} />
-                  <meshStandardMaterial color={earthColor} roughness={0.9} />
-                </mesh>
-                {/* Left Wall pier */}
-                <mesh position={[-w * 0.43, 0.03, 0]} castShadow receiveShadow>
-                  <boxGeometry args={[w * 0.14, h * 0.62, d]} />
-                  <meshStandardMaterial color={earthColor} roughness={0.9} />
-                </mesh>
-                {/* Right Wall pier */}
-                <mesh position={[w * 0.43, 0.03, 0]} castShadow receiveShadow>
-                  <boxGeometry args={[w * 0.14, h * 0.62, d]} />
-                  <meshStandardMaterial color={earthColor} roughness={0.9} />
-                </mesh>
+            {isLatticeWindow && (() => {
+              // 한옥 건축 가구식 위계 및 창호 규격 정의:
+              // 창문 개구부(Aperture)의 높이 및 수직 중심 좌표를 일관되게 정렬합니다.
+              // - 하부 머름벽(머름대/벽체 하단부): 바닥부터 y = -h * 0.14 까지 (높이: h * 0.36)
+              // - 상부 인방벽(상인방 하단 벽체): y = +h * 0.32 부터 천장까지 (높이: h * 0.18)
+              // - 개구부 중심 높이(centerY): (+h * 0.32 + -h * 0.14) / 2 = +h * 0.09
+              // - 개구부 개방 순수 높이(openH): +h * 0.32 - (-h * 0.14) = h * 0.46
+              const winCenterY = h * 0.09;
+              const openH = h * 0.46;
+              const bottomSillH = h * 0.36; // 바닥(-h/2)에서 -h*0.14까지의 벽체 높이
+              const topHeaderH = h * 0.18;  // +h*0.32에서 상단(+h/2)까지의 벽체 높이
 
-                {/* 4-sided Window Outer Hollow Frame */}
-                {/* Top header bar */}
-                <mesh position={[0, 0.05 + h * 0.27, 0]}>
-                  <boxGeometry args={[w * 0.74, 0.08, d * 1.15]} />
-                  <meshStandardMaterial color={woodDark} roughness={0.68} />
-                </mesh>
-                {/* Bottom sill bar */}
-                <mesh position={[0, 0.05 - h * 0.27, 0]}>
-                  <boxGeometry args={[w * 0.74, 0.08, d * 1.15]} />
-                  <meshStandardMaterial color={woodDark} roughness={0.68} />
-                </mesh>
-                {/* Left jamb bar */}
-                <mesh position={[-w * 0.35, 0.05, 0]}>
-                  <boxGeometry args={[0.08, h * 0.54, d * 1.15]} />
-                  <meshStandardMaterial color={woodDark} roughness={0.68} />
-                </mesh>
-                {/* Right jamb bar */}
-                <mesh position={[w * 0.35, 0.05, 0]}>
-                  <boxGeometry args={[0.08, h * 0.54, d * 1.15]} />
-                  <meshStandardMaterial color={woodDark} roughness={0.68} />
-                </mesh>
+              // 창틀 및 살대 규격: 개구부 내부(openH)에 딱 맞추면서 상/하인방에 견고하게 물림
+              const frameH = openH; // 창틀 외곽 높이
+              const frameW = w * 0.72; // 좌우 기둥 벽체 사이의 창문 너비
+              const jambW = 0.08; // 창틀 프레임 두께 (8cm)
+              const innerW = frameW - jambW * 2; // 창호지 및 격자창 순수 너비
+              const innerH = frameH - jambW * 2; // 창호지 및 격자창 순수 높이
 
-                {/* Translucent Hanji Paper Core inside opening */}
-                <mesh position={[0, 0.05, 0]}>
-                  <boxGeometry args={[w * 0.66, h * 0.48, 0.008]} />
-                  <meshStandardMaterial
-                    color={hanjiPaper}
-                    roughness={0.95}
-                    metalness={0.0}
-                  />
-                </mesh>
+              // 좌우 측벽(벽선) 너비 및 중심
+              const pierW = (w - frameW) / 2; // 좌우 남는 벽체 너비
+              const pierLeftX = -w / 2 + pierW / 2;
+              const pierRightX = w / 2 - pierW / 2;
 
-                {/* Front Korean Sesal Lattice Ribs (세살창 격자) */}
-                <group position={[0, 0.05, 0.02]}>
-                  <TraditionalLatticeGrill
-                    width={w * 0.66}
-                    height={h * 0.48}
-                    cols={8}
-                    rows={12}
-                    barThickness={0.018}
-                    color="#2b1a10"
-                  />
+              return (
+                <group>
+                  {/* [1] 창문을 둘러싸는 외곽 흙벽체 (중앙 개구부를 완벽히 비워내는 4분할 구조) */}
+                  {/* 하부 머름벽 (Bottom Wall sill): y = -h/2 ~ -h*0.14 */}
+                  <mesh position={[0, -h / 2 + bottomSillH / 2, 0]} castShadow receiveShadow>
+                    <boxGeometry args={[w, bottomSillH, d]} />
+                    <meshStandardMaterial color={earthColor} roughness={0.9} />
+                  </mesh>
+
+                  {/* 상부 인방벽 (Top Wall header): y = +h*0.32 ~ +h/2 */}
+                  <mesh position={[0, h / 2 - topHeaderH / 2, 0]} castShadow receiveShadow>
+                    <boxGeometry args={[w, topHeaderH, d]} />
+                    <meshStandardMaterial color={earthColor} roughness={0.9} />
+                  </mesh>
+
+                  {/* 좌측 벽체 (Left Wall pier): 하부벽과 상부벽 사이를 빈틈없이 메움 */}
+                  <mesh position={[pierLeftX, winCenterY, 0]} castShadow receiveShadow>
+                    <boxGeometry args={[pierW, openH, d]} />
+                    <meshStandardMaterial color={earthColor} roughness={0.9} />
+                  </mesh>
+
+                  {/* 우측 벽체 (Right Wall pier): 좌우 대칭 메움 */}
+                  <mesh position={[pierRightX, winCenterY, 0]} castShadow receiveShadow>
+                    <boxGeometry args={[pierW, openH, d]} />
+                    <meshStandardMaterial color={earthColor} roughness={0.9} />
+                  </mesh>
+
+                  {/* [2] 창호 4면 외곽 목재 창틀 (상·하·좌·우 유격 없이 개구부에 완벽 안착) */}
+                  {/* 상인방 창틀 바 (Top header bar) */}
+                  <mesh position={[0, winCenterY + frameH / 2 - jambW / 2, 0]}>
+                    <boxGeometry args={[frameW, jambW, d * 1.15]} />
+                    <meshStandardMaterial color={woodDark} roughness={0.68} />
+                  </mesh>
+
+                  {/* 하인방/문지방 창틀 바 (Bottom sill bar) */}
+                  <mesh position={[0, winCenterY - frameH / 2 + jambW / 2, 0]}>
+                    <boxGeometry args={[frameW, jambW, d * 1.15]} />
+                    <meshStandardMaterial color={woodDark} roughness={0.68} />
+                  </mesh>
+
+                  {/* 좌측 창선설주 (Left jamb bar) */}
+                  <mesh position={[-frameW / 2 + jambW / 2, winCenterY, 0]}>
+                    <boxGeometry args={[jambW, frameH, d * 1.15]} />
+                    <meshStandardMaterial color={woodDark} roughness={0.68} />
+                  </mesh>
+
+                  {/* 우측 창선설주 (Right jamb bar) */}
+                  <mesh position={[frameW / 2 - jambW / 2, winCenterY, 0]}>
+                    <boxGeometry args={[jambW, frameH, d * 1.15]} />
+                    <meshStandardMaterial color={woodDark} roughness={0.68} />
+                  </mesh>
+
+                  {/* [3] 반투명 전통 한지 코어 (창틀 내부 개구부에 유격 없이 정밀 배치) */}
+                  <mesh position={[0, winCenterY, 0]}>
+                    <boxGeometry args={[innerW, innerH, 0.008]} />
+                    <meshStandardMaterial
+                      color={hanjiPaper}
+                      roughness={0.95}
+                      metalness={0.0}
+                    />
+                  </mesh>
+
+                  {/* [4] 전면 전통 세살창 격자살 (Korean Sesal Lattice Ribs) */}
+                  <group position={[0, winCenterY, 0.02]}>
+                    <TraditionalLatticeGrill
+                      width={innerW}
+                      height={innerH}
+                      cols={8}
+                      rows={12}
+                      barThickness={0.018}
+                      color="#2b1a10"
+                    />
+                  </group>
+
+                  {/* [5] 후면 전통 세살창 격자살 (건물 안쪽에서도 감상 가능한 양면 격자) */}
+                  <group position={[0, winCenterY, -0.02]}>
+                    <TraditionalLatticeGrill
+                      width={innerW}
+                      height={innerH}
+                      cols={8}
+                      rows={12}
+                      barThickness={0.018}
+                      color="#2b1a10"
+                    />
+                  </group>
                 </group>
-
-                {/* Back Korean Sesal Lattice Ribs */}
-                <group position={[0, 0.05, -0.02]}>
-                  <TraditionalLatticeGrill
-                    width={w * 0.66}
-                    height={h * 0.48}
-                    cols={8}
-                    rows={12}
-                    barThickness={0.018}
-                    color="#2b1a10"
-                  />
-                </group>
-              </group>
-            )}
+              );
+            })()}
 
             {/* ============================================================== */}
             {/* 4. SLIDING DOOR (미닫이 세살문) */}

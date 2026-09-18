@@ -21,6 +21,16 @@ export const HANOK_PARTS: PartData[] = [
     dimensions: '6.0m × 4.0m × 0.6m',
     description: '습기를 막고 지반을 견고히 다지는 한옥의 기초 단층입니다.',
   },
+  {
+    id: 'floor_wood',
+    name: '바닥 생성 (Floor Construction)',
+    category: 'foundation',
+    step: 1,
+    material: '우물마루 / 온돌 / 흙바닥',
+    style: '모듈형 전통 마루 가구식 바닥',
+    dimensions: '주춧돌 배치 구역 맞춤 자동 연산',
+    description: '배치된 주춧돌 구역을 따라 한옥의 전통 마루 및 온돌 바닥을 형성합니다.',
+  },
   // STEP 2
   {
     id: 'pillar_round',

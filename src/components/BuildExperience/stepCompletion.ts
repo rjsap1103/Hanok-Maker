@@ -1,4 +1,4 @@
-import type { PlacedPart } from '../../store/useBuildStore';
+import { useBuildStore, type PlacedPart } from '../../store/useBuildStore';
 
 export interface StepCompletionStatus {
   step1: boolean;
@@ -19,6 +19,9 @@ export const isPartCompleted = (
   switch (partId) {
     case 'foundation_stone':
       return placedParts.filter((p) => p.category === 'foundation' || p.partId === 'foundation_stone').length >= 4;
+
+    case 'floor_wood':
+      return !!useBuildStore.getState().floorMesh?.visible;
 
     case 'pillar_round':
       return placedParts.filter((p) => p.category === 'pillar' || p.partId === 'pillar_round').length >= 4;

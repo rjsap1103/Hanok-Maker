@@ -16,7 +16,7 @@ const screenshotPlugin = () => ({
           try {
             const { filename, image } = JSON.parse(body)
             const base64Data = image.replace(/^data:image\/png;base64,/, '')
-            const targetDir = 'C:/Users/mbc/.gemini/antigravity-ide/brain/cf0c4694-a610-461e-ab1d-cb904d1a9346'
+            const targetDir = 'C:/Users/mbc/.gemini/antigravity-ide/brain/37cfd9a5-aad4-41d9-b6b6-04e390041cd9'
             fs.writeFileSync(path.join(targetDir, filename), base64Data, 'base64')
             res.statusCode = 200
             res.end(JSON.stringify({ ok: true }))
@@ -36,5 +36,18 @@ const screenshotPlugin = () => ({
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), screenshotPlugin()],
+  server: {
+    proxy: {
+      '/api/designs': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/api/ai-content': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
+  },
 })
+
 

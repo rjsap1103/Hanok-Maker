@@ -86,10 +86,19 @@ export const CameraController: React.FC<CameraControllerProps> = ({ controlsRef 
     }
   }, [size, camera]);
 
+  const isCinematicMode = useCameraStore((state) => state.isCinematicMode);
+  const setCinematicStageName = useCameraStore((state) => state.setCinematicStageName);
+
+  // 시네마틱 모드 진행 시간 및 스테이지 추적
+  const cinematicTimeRef = useRef<number>(0);
+  const currentStageIndexRef = useRef<number>(0);
+
   // ---------------------------------------------------------------------------
   // [2] 시점(Preset) 버튼 클릭 시에만 목표 좌표 설정 및 애니메이션 활성화
   // ---------------------------------------------------------------------------
   React.useEffect(() => {
+    if (isCinematicMode) return; // 시네마틱 모드 중에는 수동 프리셋 전환 무시
+
     const offsetConfig = CAMERA_OFFSET_CONFIGS[currentPreset] || CAMERA_OFFSET_CONFIGS.default;
     const [cx, cy, cz] = buildingCenter;
 
@@ -106,7 +115,17 @@ export const CameraController: React.FC<CameraControllerProps> = ({ controlsRef 
 
     // 프리셋 버튼을 눌렀을 때만 부드러운 전환 애니메이션 시작
     isTransitioning.current = true;
-  }, [currentPreset]);
+  }, [currentPreset, isCinematicMode, buildingCenter]);
+
+  // 시네마틱 모드 시작/종료 시 시간 및 상태 초기화
+  React.useEffect(() => {
+    if (isCinematicMode) {
+      cinematicTimeRef.current = 0;
+      currentStageIndexRef.current = 0;
+      setCinematicStageName('1. Daylight 연출 (자연광 조망)');
+      isTransitioning.current = false;
+    }
+  }, [isCinematicMode, setCinematicStageName]);
 
   // ---------------------------------------------------------------------------
   // [3] 마우스 드래그(OrbitControls 조작) 감지:
@@ -119,21 +138,137 @@ export const CameraController: React.FC<CameraControllerProps> = ({ controlsRef 
 
     // OrbitControls 조작 시작('start' 이벤트: 마우스 좌클릭/우클릭 드래그 시 발생)
     const handleControlStart = () => {
-      // 카메라 강제 정렬 애니메이션 즉시 중단 -> 자유로운 마우스 회전 보장
-      isTransitioning.current = false;
+      // 일반 모드일 때만 수동 조작 시 정렬 애니메이션 중단
+      if (!isCinematicMode) {
+        isTransitioning.current = false;
+      }
     };
 
     controls.addEventListener('start', handleControlStart);
     return () => {
       controls.removeEventListener('start', handleControlStart);
     };
-  }, [controlsRef]);
+  }, [controlsRef, isCinematicMode]);
 
   // ---------------------------------------------------------------------------
-  // [4] 프레임 단위 보간 애니메이션 ( 시점 버튼 클릭 시에만 부드럽게 감속 수렴 )
+  // [4] 프레임 단위 보간 애니메이션 및 시네마틱 카메라 시퀀스 연출
   // ---------------------------------------------------------------------------
-  useFrame((state) => {
-    // 사용자가 마우스로 드래그 중이거나 전환이 끝난 상태면 아무런 간섭도 하지 않음
+  useFrame((state, delta) => {
+    const [cx, cy, cz] = buildingCenter;
+
+    // A. 시네마틱 모드 (Cinematic Mode) 동작 중일 때
+    if (isCinematicMode) {
+      cinematicTimeRef.current += delta;
+      const t = cinematicTimeRef.current;
+
+      // 총 5개 구간: 각 구간 약 3.6초 (총 18초 루프)
+      // 0 ~ 3.6s   : Stage 1 - Daylight 연출 (따스한 햇살 아래 정면 수평 조망)
+      // 3.6 ~ 7.2s : Stage 2 - Slow Orbit (한옥 전체를 완만하게 회전하며 360도 입체 감상)
+      // 7.2 ~ 10.8s: Stage 3 - Close-up (처마와 기둥, 창호 문살의 정교한 결구 클로즈업)
+      // 10.8 ~ 14.4s: Stage 4 - Roof Detail (용마루 수키와 및 지붕 겹기와 능선 디테일 조망)
+      // 14.4 ~ 18.0s: Stage 5 - Full Establishing Shot (광활한 하늘 아래 한옥 전경 와이드 샷)
+      const stageDuration = 3.6;
+      const totalDuration = stageDuration * 5;
+      const loopTime = t % totalDuration;
+      const stageIndex = Math.floor(loopTime / stageDuration);
+      const stageProgress = (loopTime % stageDuration) / stageDuration; // 0.0 ~ 1.0
+
+      if (stageIndex !== currentStageIndexRef.current) {
+        currentStageIndexRef.current = stageIndex;
+        const stageNames = [
+          '1. Daylight 연출 (자연광 정면 조망)',
+          '2. Slow Orbit (360도 한옥 가구 회전)',
+          '3. Close-up (기둥·창호 결구부 디테일)',
+          '4. Roof Detail (용마루 및 기와 능선)',
+          '5. Full Establishing Shot (한옥 전경 와이드 샷)',
+        ];
+        setCinematicStageName(stageNames[stageIndex]);
+      }
+
+      let camX = cx;
+      let camY = cy + 2;
+      let camZ = cz + 10;
+      let targetX = cx;
+      let targetY = cy;
+      let targetZ = cz;
+      let fov = 40;
+
+      if (stageIndex === 0) {
+        // [Stage 1: Daylight 연출]
+        // 낮은 정면에서 부드럽게 약간 위로 상승하며 한옥의 전면 입면과 채광을 감상
+        const ease = 0.5 - 0.5 * Math.cos(stageProgress * Math.PI);
+        camX = cx + Math.sin(stageProgress * 0.3) * 3;
+        camY = cy + 0.8 + ease * 1.2;
+        camZ = cz + 14 - ease * 2;
+        targetX = cx;
+        targetY = cy + 0.5;
+        targetZ = cz;
+        fov = 38;
+      } else if (stageIndex === 1) {
+        // [Stage 2: Slow Orbit]
+        // 반경 13m 거리에서 중심을 축으로 45도 회전하며 입체적 결구 감상
+        const angle = 0.3 + stageProgress * 0.8;
+        const radius = 13.5;
+        camX = cx + Math.sin(angle) * radius;
+        camY = cy + 3.2 + Math.sin(stageProgress * Math.PI) * 0.6;
+        camZ = cz + Math.cos(angle) * radius;
+        targetX = cx;
+        targetY = cy + 0.6;
+        targetZ = cz;
+        fov = 36;
+      } else if (stageIndex === 2) {
+        // [Stage 3: Close-up]
+        // 기둥 머리와 처마, 격자창호 결구부로 부드럽게 근접
+        const ease = 0.5 - 0.5 * Math.cos(stageProgress * Math.PI);
+        camX = cx - 2.8 + ease * 0.6;
+        camY = cy + 1.2 + ease * 0.4;
+        camZ = cz + 4.8 - ease * 0.8;
+        targetX = cx - 1.2;
+        targetY = cy + 1.2;
+        targetZ = cz + 1.5;
+        fov = 32;
+      } else if (stageIndex === 3) {
+        // [Stage 4: Roof Detail]
+        // 높은 각도에서 용마루와 겹기와, 풍판, 서까래 끝선으로 활강
+        const ease = 0.5 - 0.5 * Math.cos(stageProgress * Math.PI);
+        camX = cx + 5.5 - ease * 2.5;
+        camY = cy + 4.6 + Math.sin(stageProgress * Math.PI) * 0.4;
+        camZ = cz + 6.5 - ease * 1.5;
+        targetX = cx;
+        targetY = cy + 2.8;
+        targetZ = cz;
+        fov = 35;
+      } else {
+        // [Stage 5: Full Establishing Shot]
+        // 웅장하게 뒤로 물러나며 한옥 전체와 기단, 지붕을 한눈에 담는 시네마틱 와이드 샷
+        const ease = 0.5 - 0.5 * Math.cos(stageProgress * Math.PI);
+        camX = cx + 11 + ease * 3;
+        camY = cy + 6.5 + ease * 2;
+        camZ = cz + 12 + ease * 4;
+        targetX = cx;
+        targetY = cy + 0.8;
+        targetZ = cz;
+        fov = 42;
+      }
+
+      // 부드러운 프레임 보간 (smooth lerp 0.05)
+      state.camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.06);
+      if (controlsRef.current) {
+        controlsRef.current.target.lerp(new THREE.Vector3(targetX, targetY, targetZ), 0.06);
+        controlsRef.current.update();
+      } else {
+        state.camera.lookAt(targetX, targetY, targetZ);
+      }
+
+      if ('fov' in state.camera && typeof (state.camera as THREE.PerspectiveCamera).fov === 'number') {
+        const pCam = state.camera as THREE.PerspectiveCamera;
+        pCam.fov = THREE.MathUtils.lerp(pCam.fov, fov, 0.06);
+        pCam.updateProjectionMatrix();
+      }
+      return;
+    }
+
+    // B. 일반 인터랙티브 모드 (프리셋 이동 시에만 lerp 적용)
     if (!isTransitioning.current) return;
 
     // 1. 카메라 위치를 목표 위치로 8%씩 부드럽게 접근 (lerp)

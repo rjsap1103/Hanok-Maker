@@ -4,4 +4,5 @@ export * from './ComponentInventory';
 export * from './ComponentInfo';
 export * from './BuildToolbar';
 export * from './MobileBottomSheet';
+export * from './PartDetailModal';
 export * from './partsData';
